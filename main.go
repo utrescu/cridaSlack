@@ -23,7 +23,7 @@ func ReadConfig() (*Config, error) {
 		homeDir = usr.HomeDir
 	}
 
-	for _, path := range []string{"/etc/cridaslack.conf", homeDir + "/.cridaslack.conf", "./slackcat.conf"} {
+	for _, path := range []string{"/etc/cridaslack.conf", homeDir + "/.cridaslack.conf", "./cridaslack.conf"} {
 		file, err := os.Open(path)
 		if os.IsNotExist(err) {
 			continue
@@ -44,6 +44,7 @@ func ReadConfig() (*Config, error) {
 	return nil, errors.New("Config file not found, provide one")
 }
 
+// Message represents the message to send to Slack
 type Message struct {
 	Channel   string `json:"channel"`
 	Username  string `json:"username,omitempty"`
@@ -52,6 +53,7 @@ type Message struct {
 	IconEmoji string `json:"icon_emoji,omitempty"`
 }
 
+// Encode encodes the message to be sent
 func (m Message) Encode() (string, error) {
 	b, err := json.Marshal(m)
 	if err != nil {
@@ -60,6 +62,7 @@ func (m Message) Encode() (string, error) {
 	return string(b), nil
 }
 
+// Post sends the message to the provided WebHook
 func (m Message) Post(Webhook string) error {
 	encoded, err := m.Encode()
 	if err != nil {

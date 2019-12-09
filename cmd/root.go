@@ -64,7 +64,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&Message, "message", "m", "Test Message", "Message to send")
 	RootCmd.PersistentFlags().StringVarP(&Channel, "channel", "c", "#general", "Channel to send the message")
 	RootCmd.PersistentFlags().StringVarP(&User, "user", "u", "", "User who send the message")
-	RootCmd.PersistentFlags().StringVarP(&Icon, "icon", "i", "", "Database user password")
+	RootCmd.PersistentFlags().StringVarP(&Icon, "icon", "i", "", "User icon")
 
 	viper.BindPFlag("message", RootCmd.Flags().Lookup("message"))
 	viper.BindPFlag("channel", RootCmd.Flags().Lookup("channel"))
