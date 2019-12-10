@@ -44,13 +44,34 @@ func ReadConfig() (*Config, error) {
 	return nil, errors.New("Config file not found, provide one")
 }
 
+// TextMessage content
+type TextMessage struct {
+	Type string `json:"type,omitempty"`
+	Text string `json:"text,omitempty"`
+}
+
+// BlocksMessage is for formatting messages
+type BlocksMessage struct {
+	Type string       `json:"type,omitempty"`
+	Text *TextMessage `json:"text,omitempty"`
+}
+
+// NewBlockMessage retorna un missatge en format mrkdwn
+func NewBlockMessage(text string, format string) BlocksMessage {
+	bloc := BlocksMessage{}
+	bloc.Type = "section"
+	bloc.Text = &TextMessage{text, format}
+	return bloc
+}
+
 // Message represents the message to send to Slack
 type Message struct {
-	Channel   string `json:"channel"`
-	Username  string `json:"username,omitempty"`
-	Text      string `json:"text"`
-	Parse     string `json:"parse"`
-	IconEmoji string `json:"icon_emoji,omitempty"`
+	Channel   string          `json:"channel"`
+	Username  string          `json:"username,omitempty"`
+	Text      string          `json:"text"`
+	Blocks    []BlocksMessage `json:"blocks,omitempty"`
+	Parse     string          `json:"parse"`
+	IconEmoji string          `json:"icon_emoji,omitempty"`
 }
 
 // Encode encodes the message to be sent
@@ -88,13 +109,27 @@ func main() {
 	}
 
 	cmd.Execute()
+	var msg Message
 
-	msg := Message{
-		Channel:   cmd.Channel,
-		Username:  cmd.User,
-		Parse:     "full",
-		Text:      cmd.Message,
-		IconEmoji: cmd.Icon,
+	if !cmd.Markdown {
+		msg = Message{
+			Channel:   cmd.Channel,
+			Username:  cmd.User,
+			Parse:     "full",
+			Text:      cmd.Message,
+			IconEmoji: cmd.Icon,
+		}
+	} else {
+		var blocs []BlocksMessage
+		blocs = append(blocs, NewBlockMessage("mrkdwn", cmd.Message))
+
+		msg = Message{
+			Channel:   cmd.Channel,
+			Username:  cmd.User,
+			Blocks:    blocs,
+			Text:      cmd.Message,
+			IconEmoji: cmd.Icon,
+		}
 	}
 
 	err = msg.Post(cfg.Webhook)

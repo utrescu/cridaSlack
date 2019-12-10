@@ -17,6 +17,9 @@ var (
 	// Debug shows info
 	Debug bool
 
+	// Format message in Mrkdwn
+	Markdown bool
+
 	// Message to send
 	Message string
 	// Channel to send message
@@ -60,6 +63,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().BoolVar(&Debug, "debug", false, "Show debug info")
+	RootCmd.PersistentFlags().BoolVar(&Markdown, "format", false, "Format message in mrkdwn")
 
 	RootCmd.PersistentFlags().StringVarP(&Message, "message", "m", "Test Message", "Message to send")
 	RootCmd.PersistentFlags().StringVarP(&Channel, "channel", "c", "#general", "Channel to send the message")
